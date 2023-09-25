@@ -36,7 +36,7 @@ def worker():
     monospace = ImageFont.truetype("./Fonts/ANDALEMO.ttf", FONT_SIZE)
     # _, top, _, bottom = monospace.getbbox(" .',:;clxokXdO0KN")
     # SPACING = ROW_SPACING - (bottom - top) - FONT_ALPHA
-    frame_background = np.zeros((HEIGHT, WIDTH), np.uint8)
+    frame_background = np.zeros((HEIGHT, WIDTH, 3), np.uint8)
     context = zmq.Context()
     puller = context.socket(zmq.PULL)
     puller.connect("tcp://192.168.1.10:5559")
@@ -74,7 +74,7 @@ def worker():
             
             
             for index, row in enumerate(converted):
-                draw.text((0, index * (ROW_SPACING)),''.join(row),(255),font=monospace)
+                draw.text((0, index * (ROW_SPACING)),''.join(row),(0,255,0),font=monospace)
             
             # Convert back to OpenCV image
             result_o = np.array(im_p)

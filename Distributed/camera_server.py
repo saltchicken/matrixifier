@@ -40,16 +40,9 @@ def sender():
                 # result_o = puller.recv()
                 
                 deserialized_image = np.frombuffer(result_o, dtype=np.uint8)
-                deserialized_image = deserialized_image.reshape(HEIGHT, WIDTH)
+                deserialized_image = deserialized_image.reshape(HEIGHT, WIDTH, 3)
                 
-                r_channel = np.zeros_like(deserialized_image)
-                g_channel = deserialized_image.copy()
-                b_channel = np.zeros_like(deserialized_image)
-
-                # Merge the three channels to form an RGB image
-                rgb_image = cv2.merge((b_channel, g_channel, r_channel))
-                
-                cam.send(rgb_image)
+                cam.send(deserialized_image)
             except Exception as e:
                 print(e)
 
@@ -70,9 +63,16 @@ if __name__ == "__main__":
     # be resolved by having the process running as a standalone service.
     time.sleep(2)
     
-    while True:
+    while(cv2.waitKey(1) & 0xFF != ord('q')):
         try:
-            ret, frame = cap.read()      
+            ret, frame = cap.read()
+            # This will loop the source if reading from a file.
+            # if not ret:
+            #    cap = cv2.VideoCapture(CAP_INPUT)
+            #    continue
+            # if frame is None:
+            #    continue
+            
             image = cv2.resize(frame, (RESIZED_WIDTH, RESIZED_HEIGHT))
             mask = cv2.inRange(image, LOWER_BLUE, UPPER_BLUE)
             image[mask != 0] = [0, 0, 0]
